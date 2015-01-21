@@ -1,0 +1,25 @@
+## reading raw data
+
+NEI=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/summarySCC_PM25.rds" )
+## subsetting to get only baltimore data
+NEI_sub <- NEI[((NEI$fips == "24510") | (NEI$fips == "06037")),]
+
+## reading SCC info
+SCC=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/Source_Classification_Code.rds" )
+
+## any observation that has "Motor" keyword
+
+index <- c(grep("Motor", scc$EI.Sector),   grep("Motor", scc$SCC.Level.One),  grep("Motor", scc$SCC.Level.Two),grep("Motor", scc$SCC.Level.Three))
+## subsetting to find only the observations having keyword "Motor"
+scc_sub <- scc[index,]
+
+NEI_sub <- NEI_sub[which(NEI_sub$SCC %in% scc_sub$SCC),]
+NEI_sub[NEI_sub == "24510"] <- "Baltimore"
+NEI_sub[NEI_sub == "06037"] <- "Los Angeles County"
+NEI_sub <- data.table(NEI_sub)
+plotdata <- NEI_sub[, list(sum=sum(Emissions)), by = list(year,fips)]
+
+png(filename = "plot6.png", width = 680, height = 480, units = "px",pointsize = 12, bg = "white")
+ggplot(plotdata, aes(x = factor(year), y = sum, fill = factor(fips))) + geom_bar(stat = "identity", position=position_dodge())
+
+dev.off()
