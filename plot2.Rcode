@@ -1,0 +1,25 @@
+##Plot 2
+#Read the rds data for PM2.5 Emissions Data
+expdata1=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/summarySCC_PM25.rds" )
+
+## Course project 2 Mona 2 
+expdata1=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/summarySCC_PM25.rds" )
+ 
+  ## getting all sum data based on years
+plotdata <- expdata[, list(sum=sum(Emissions)), by = year]
+
+ 
+
+# aggregate w/ filter with ddply(plyr). Baltimore is fips code 24510
+  aggDataPerYear <- ddply(expdata1[expdata1$fips == "24510",], c("year"),function(df)sum(df$Emissions, na.rm=TRUE))
+
+#Change the col names for this aggregared data to more meaningful
+names(aggDataPerYear) <- c('Year', 'TotEmission')
+#Open graphics device
+  +png(filename="figure/plot2.png", width=480, height=480)
+
+#Plot the final aggregate data for Baltimore city from 1999-2008 to see if emission decreased
+  plot(aggDataPerYear$year, totalPerYear$V1, type="l", xlab="Year", ylab="PM2.5 (tons)", main="PM2.5 Generated between years 1999-2008 in Baltimore City, MD")
+
+#shutdown graphic device
+  +dev.off()
