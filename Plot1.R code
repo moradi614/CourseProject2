@@ -1,0 +1,26 @@
+ ## Course Project 2
+
+## Inserting data
+expdata1=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/summarySCC_PM25.rds" )
+  head(expdata1)
+
+expdata2=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/Source_Classification_Code.rds" )
+head(expdata2)
+#Sum of all emissions group by individual years
+aggData<-with (expdata1,aggregate(expdata1[,'Emissions'],by=list(year), sum, na.rm=TRUE))
+
+#Change the col names for this aggregared data to more meaningful
+names(aggData) <- c('Year', 'TotEmission')
+
+#Open the graphic device to plot the data
+png("figure/plot1.png", width=480, height=480, units='px')
+
+#Plot the aggregated data of total emissions from PM2.5 for all the years
+plot(aggData, type="l", xlab="Year", ylab="Total PM2.5 Emmision From All Sources Between 1999-2008",
+     col="dark red", xaxt="n", main="Total Emissions (tons)")
+
+#Plot the x-axis that contains the year
+axis(1, at=as.integer(aggData$Year), las=1)
+
+#Shut the graphic device
+dev.off()
