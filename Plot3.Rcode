@@ -1,0 +1,16 @@
+NEI=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/summarySCC_PM25.rds" )
+head(NEI)
+ baltimore.fips <- "24510"
+  Baltimore<- NEI[NEI$fips==baltimore.fips,]
+  
+    baltimore.bytype <- aggregate(Emissions ~ year + type, data = Baltimore, sum)
+  
+    baltimore.bytype$Category <- c(rep("POINT", 4), rep("ROAD", 8), rep("POINT", 4))
+  baltimore.bytype$OnNon <- c(rep("NON", 8), rep("ON", 8))
+  
+  png(filename = "plot3.png", width = 480, height = 480, units = "px")
+  
+    ggplot(baltimore.bytype, aes(year, Emissions, fill=type)) +geom_bar(stat = "identity") + facet_grid(Category~OnNon)+geom_bar(stat = "identity") + facet_grid(Category~OnNon)+ ylab("Emissions (Tons of PM2.5)") + xlab("Year") + theme(legend.position = "bottom")
+  
+    dev.off()  
+  
