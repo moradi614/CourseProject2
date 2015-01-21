@@ -1,0 +1,23 @@
+## reading raw data
+NEI=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/summarySCC_PM25.rds" )
+## reading SCC info
+SCC=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/Source_Classification_Code.rds" )
+
+## any observation that has Coal or coal keyword
+
+index <- c(grep("Coal", scc$EI.Sector), grep("Coal", scc$SCC.Level.Three))
+##  find only the observations having keyword "Coal"
+scc_sub <- scc[index,]
+
+## extracting all emission data matching the SCC's in scc_sub
+NEI_sub <- NEI[which(NEI$SCC %in% scc_sub$SCC),]
+## converting to data table to prepare for plotdata
+NEI_sub <- data.table(NEI_sub)
+##  summary data to be plotted
+plotdata <- NEI_sub[, list(sum=sum(Emissions)), by = year]
+
+##  barchart
+png(filename = "plot4.png", width = 480, height = 480, units = "px",pointsize = 12, bg = "white")
+barplot(plotdata$sum, names = plotdata$year, xlab = "years",ylab = "Emission in tons", main = "Total Coal Combustion Related Emission in US")
+
+dev.off()
