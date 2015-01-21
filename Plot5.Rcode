@@ -1,0 +1,29 @@
+## reading raw data
+
+
+NEI=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/summarySCC_PM25.rds" )
+##  get only baltimore data
+baltimore <- NEI[(NEI$fips == "24510"),]
+## reading SCC info
+
+SCC=readRDS("Z:/Mona Moradi/Cate ET&PD/Mona Course/Source_Classification_Code.rds" )
+##  any observation that has "Motor" keyword
+
+
+ndex <- c(grep("Motor", scc$EI.Sector), grep("Motor", scc$SCC.Level.Three))
+##  find only the observations having keyword "Motor"
+scc_sub <- scc[index,]
+
+## extracting all emission data matching the SCC's in scc_sub
+baltimore_sub <- baltimore[which(baltimore$SCC %in% scc_sub$SCC),]
+## converting to data table to prepare for plotdata
+baltimore_sub <- data.table(baltimore_sub)
+## getting summary data to be plotted
+plotdata <- baltimore_sub[, list(sum=sum(Emissions)), by = year]
+
+## plotting barchart
+png(filename = "plot5.png", width = 480, height = 480, units = "px", pointsize = 12, bg = "white")
+barplot(plotdata$sum, names = plotdata$year, xlab = "years",ylab = "Emission in tons",
+main = "Total Motor Vehicle Related Emission in Baltimore")
+
+dev.off()
